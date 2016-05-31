@@ -66,12 +66,18 @@ describe('Basic end-to-end Workflow', function () {
     // stuck to the first build done
     sh.exec(`${ngBin} build -prod`);
     expect(existsSync(path.join(process.cwd(), 'dist'))).to.be.equal(true);
+    const indexHtml = fs.readFileSync(path.join(process.cwd(), 'dist/index.html'), 'utf-8');
+    // Check for cache busting hash script src
+    expect(indexHtml).to.match(/main\.[0-9a-f]{20}\.bundle\.js/);
+    // Also does not create new things in GIT.
+    expect(sh.exec('git status --porcelain').output).to.be.equal(undefined);
+  });
+
+  it('Supports production builds config file replacement', function() {   
     var mainBundlePath = path.join(process.cwd(), 'dist', 'main.js');
     var mainBundleContent = fs.readFileSync(mainBundlePath, { encoding: 'utf8' });
     // production: true minimized turns into production:!0
     expect(mainBundleContent).to.include('production:!0');
-    // Also does not create new things in GIT.
-    expect(sh.exec('git status --porcelain').output).to.be.equal(undefined);
   });
 
   it('Can run `ng build` in created project', function () {
@@ -83,11 +89,9 @@ describe('Basic end-to-end Workflow', function () {
       })
       .then(function () {
         expect(existsSync(path.join(process.cwd(), 'dist'))).to.be.equal(true);
-
         // Check the index.html to have no handlebar tokens in it.
         const indexHtml = fs.readFileSync(path.join(process.cwd(), 'dist/index.html'), 'utf-8');
-        expect(indexHtml).to.not.include('{{');
-        expect(indexHtml).to.include('vendor/es6-shim/es6-shim.js');
+        expect(indexHtml).to.include('main.bundle.js');
       })
       .then(function () {
         // Also does not create new things in GIT.
@@ -139,12 +143,12 @@ describe('Basic end-to-end Workflow', function () {
     var ngServePid;
 
     function executor(resolve, reject) {
-      var serveProcess = child_process.exec(`${ngBin} serve`);
+      var serveProcess = child_process.exec(`${ngBin} serve`, {maxBuffer: 500*1024});
       var startedProtractor = false;
       ngServePid = serveProcess.pid;
 
       serveProcess.stdout.on('data', (data) => {
-        if (/Build successful/.test(data) && !startedProtractor) {
+        if (/webpack: bundle is now VALID/.test(data.toString('utf-8')) && !startedProtractor) {
           startedProtractor = true;
           child_process.exec(`${ngBin} e2e`, (error, stdout, stderr) => {
             if (error !== null) {
@@ -153,8 +157,6 @@ describe('Basic end-to-end Workflow', function () {
               resolve();
             }
           });
-        } else if (/ failed with:/.test(data)) {
-          reject(data);
         }
       });
 
@@ -448,12 +450,12 @@ describe('Basic end-to-end Workflow', function () {
     var ngServePid;
 
     function executor(resolve, reject) {
-      var serveProcess = child_process.exec(`${ngBin} serve`);
+      var serveProcess = child_process.exec(`${ngBin} serve`, {maxBuffer: 500*1024});
       var startedProtractor = false;
       ngServePid = serveProcess.pid;
 
       serveProcess.stdout.on('data', (data) => {
-        if (/Build successful/.test(data) && !startedProtractor) {
+        if (/webpack: bundle is now VALID/.test(data.toString('utf-8')) && !startedProtractor) {
           startedProtractor = true;
           child_process.exec(`${ngBin} e2e`, (error, stdout, stderr) => {
             if (error !== null) {
@@ -462,8 +464,6 @@ describe('Basic end-to-end Workflow', function () {
               resolve();
             }
           });
-        } else if (/ failed with:/.test(data)) {
-          reject(data);
         }
       });
 
