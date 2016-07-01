@@ -1,20 +1,23 @@
-import {webpackOutputOptions, webpackDevConfig, webpackProdConfig, webpackVendorDLLConfig} from '../models/';
-
 import {ServeTaskOptions} from '../commands/serve';
+import {NgCliWebpackConfig} from '../models/webpack-config'
+import {webpackOutputOptions} from '../models/'
 
 // Configure build and output;
-const Task            = require('ember-cli/lib/models/task');
+var Task            = require('ember-cli/lib/models/task');
 const webpack         = require('webpack');
 
 let lastHash = null;
 
 module.exports = Task.extend({
   // Options: String outputPath
-  run: (runTaskOptions: ServeTaskOptions) => {
+  run: function(runTaskOptions: ServeTaskOptions) {
 
-    // TODO#: Variable Config for environments.
-    const webpackCompiler = webpack(webpackProdConfig(this.project));
+    var project = this.cliProject;
+    var config = new NgCliWebpackConfig(project, runTaskOptions.environment).config;
+    const webpackCompiler = webpack(config);
+
     const ProgressPlugin  = require('webpack/lib/ProgressPlugin');
+
 
     webpackCompiler.apply(new ProgressPlugin({
       profile: true

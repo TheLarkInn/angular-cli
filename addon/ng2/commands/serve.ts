@@ -74,7 +74,6 @@ module.exports = Command.extend({
         }
 
         const ServeWebpackTask = (require('../tasks/serve-webpack.ts'))
-        // var ServeTask = require('../tasks/serve');
 
         var serve = new ServeWebpackTask({
           ui: this.ui,

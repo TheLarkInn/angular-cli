@@ -8,7 +8,6 @@
 // This allows for angular2-template-loader to transpile the sass correctly.
 
 import * as webpack from 'webpack';
-import {ngAppResolve} from './webpack-build-utils';
 
 const path = require('path');
 const ForkCheckerPlugin = require('awesome-typescript-loader').ForkCheckerPlugin;
@@ -34,189 +33,168 @@ var components = [
     'tabs',
     'toolbar'
 ];
-/** Map relative paths to URLs. */
-var aliasMap: any = {
-    '@angular2-material/core': ngAppResolve('./src/core'),
-};
 
-components.forEach(function (name) {
-  aliasMap[("@angular2-material/" + name)] = ngAppResolve("./src/components/" + name);
-  return aliasMap[("@angular2-material/" + name)] = ngAppResolve("./src/components/" + name);
-});
+export const getWebpackMaterialConfig = function(projectRoot: string) {
+  /** Map relative paths to URLs. */
+  var aliasMap: any = {
+      '@angular2-material/core': path.resolve(projectRoot, './src/core'),
+  };
 
-export const webpackMaterialConfig = {
-  devtool: 'inline-source-map',
-  resolve: {
-    extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js', '.css', '.scss'],
-    root: ngAppResolve('./'),
-    alias: aliasMap
-  },
-  sassLoader: {
-    includePaths: [
-        // This allows for automatic resolving of @import's for sass for variables.
-        ngAppResolve('./src/core/style')
-    ]
-  },
-  debug: true,
-  context: path.resolve(__dirname, './'),
-  entry: {
-    main: [ngAppResolve('./src/demo-app/main.ts')],
-    vendor: ngAppResolve('./src/demo-app/vendor.ts')
-  },
-  output: {
-    path: './dist',
-    filename: '[name].bundle.js'
-  },
-  module: {
-    preLoaders: [
-      {
-        test: /\.js$/,
-        loader: 'source-map-loader',
-        exclude: [
-          ngAppResolve('node_modules/rxjs'),
-          ngAppResolve('node_modules/@angular'),
-        ]
-      }
-    ],
-    ts: {
-      configFileName: ngAppResolve('./src/demo-app/tsconfig.json')
+  components.forEach(function (name) {
+    aliasMap[("@angular2-material/" + name)] = path.resolve(projectRoot, "./src/components/" + name);
+    return aliasMap[("@angular2-material/" + name)] = path.resolve(projectRoot, "./src/components/" + name);
+  });
+
+  return {
+    devtool: 'inline-source-map',
+    resolve: {
+      extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js', '.css', '.scss'],
+      root: path.resolve(projectRoot, './'),
+      alias: aliasMap
     },
-    loaders: [
-      {
-        test: /\.ts$/,
-        loaders: [
-          'ts-loader', 'angular2-template-loader'
-        ],
-        exclude: [/\.(spec|e2e)\.ts$/]
-      },
-      { test: /\.json$/, loader: 'json-loader'},
-      { test: /\.css$/,  loaders: ['raw-loader', 'postcss-loader'] },
-      { test: /\.styl$/, loaders: ['raw-loader', 'postcss-loader', 'stylus-loader'] },
-      { test: /\.less$/, loaders: ['raw-loader', 'less-loader'] },
-      { test: /\.s?css$/, loaders: ['raw-loader', 'postcss-loader', 'sass-loader'] },
-      { test: /\.(jpg|png)$/, loader: 'url-loader?limit=128000'},
-      { test: /\.html$/, loader: 'raw-loader' }
-    ]
-  },
-  plugins: [
-    // new DebugWebpackPlugin({
-    //   // Defaults to ['webpack:*'] which can be VERY noisy, so try to be specific
-    //   // scope: [
-    //   //   'webpack:compiler:*', // include compiler logs
-    //   //   'webpack:plugin:ExamplePlugin' // include a specific plugin's logs
-    //   // ],
-
-    //   // // Inspect the arguments passed to an event
-    //   // // These are triggered on emits
-    //   // listeners: {
-    //   //   'webpack:compiler:run': function(compiler) {
-    //   //     // Read some data out of the compiler
-    //   //   }
-    //   // },
-    //   // Defaults to the compiler's setting
-    //   debug: true
-    // }),
-    new webpack.optimize.CommonsChunkPlugin({name: 'vendor'}),
-    new ForkCheckerPlugin(),
-    new HtmlWebpackPlugin({
-      template: ngAppResolve('./src/demo-app/index.html'),
-      chunksSortMode: 'dependency'
-    }),
-  ],
-  node: {
-    global: 'window',
-    crypto: 'empty',
-    module: false,
-    clearImmediate: false,
-    setImmediate: false
-  }
-};
-
-export const webpackMaterialE2EConfig = {
-  devtool: 'inline-source-map',
-  resolve: {
-    extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js', '.css', '.scss'],
-    root: ngAppResolve('./'),
-    alias: aliasMap
-  },
-  sassLoader: {
-    includePaths: [
-        // This allows for automatic resolving of @import's for sass for variables.
-        ngAppResolve('./src/core/style')
-    ]
-  },
-  debug: true,
-  context: path.resolve(__dirname, './'),
-  entry: {
-    main: [ngAppResolve('./src/e2e-app/main.ts')],
-    vendor: ngAppResolve('./src/e2e-app/vendor.ts')
-  },
-  output: {
-    path: './dist',
-    filename: '[name].bundle.js'
-  },
-  module: {
-    preLoaders: [
-      {
-        test: /\.js$/,
-        loader: 'source-map-loader',
-        exclude: [
-          ngAppResolve('node_modules/rxjs'),
-          ngAppResolve('node_modules/@angular'),
-        ]
-      }
-    ],
-    ts: {
-      configFileName: ngAppResolve('./src/e2e-app/tsconfig.json')
+    sassLoader: {
+      includePaths: [
+          // This allows for automatic resolving of @import's for sass for variables.
+          path.resolve(projectRoot, './src/core/style')
+      ]
     },
-    loaders: [
-      {
-        test: /\.ts$/,
-        loaders: [
-          'ts-loader', 'angular2-template-loader'
-        ],
-        exclude: [/\.(spec|e2e)\.ts$/]
+    debug: true,
+    context: path.resolve(__dirname, './'),
+    entry: {
+      main: [path.resolve(projectRoot, './src/demo-app/main.ts')],
+      vendor: path.resolve(projectRoot, './src/demo-app/vendor.ts')
+    },
+    output: {
+      path: './dist',
+      filename: '[name].bundle.js'
+    },
+    module: {
+      preLoaders: [
+        {
+          test: /\.js$/,
+          loader: 'source-map-loader',
+          exclude: [
+            path.resolve(projectRoot, 'node_modules/rxjs'),
+            path.resolve(projectRoot, 'node_modules/@angular'),
+          ]
+        }
+      ],
+      ts: {
+        configFileName: path.resolve(projectRoot, './src/demo-app/tsconfig.json')
       },
-      { test: /\.json$/, loader: 'json-loader'},
-      { test: /\.css$/,  loaders: ['raw-loader', 'postcss-loader'] },
-      { test: /\.styl$/, loaders: ['raw-loader', 'postcss-loader', 'stylus-loader'] },
-      { test: /\.less$/, loaders: ['raw-loader', 'less-loader'] },
-      { test: /\.s?css$/, loaders: ['raw-loader', 'postcss-loader', 'sass-loader'] },
-      { test: /\.(jpg|png)$/, loader: 'url-loader?limit=128000'},
-      { test: /\.html$/, loader: 'raw-loader' }
-    ]
-  },
-  plugins: [
-    // new DebugWebpackPlugin({
-    //   // Defaults to ['webpack:*'] which can be VERY noisy, so try to be specific
-    //   // scope: [
-    //   //   'webpack:compiler:*', // include compiler logs
-    //   //   'webpack:plugin:ExamplePlugin' // include a specific plugin's logs
-    //   // ],
+      loaders: [
+        {
+          test: /\.ts$/,
+          loaders: [
+            'ts-loader', 'angular2-template-loader'
+          ],
+          exclude: [/\.(spec|e2e)\.ts$/]
+        },
+        { test: /\.json$/, loader: 'json-loader'},
+        { test: /\.css$/,  loaders: ['raw-loader', 'postcss-loader'] },
+        { test: /\.styl$/, loaders: ['raw-loader', 'postcss-loader', 'stylus-loader'] },
+        { test: /\.less$/, loaders: ['raw-loader', 'less-loader'] },
+        { test: /\.s?css$/, loaders: ['raw-loader', 'postcss-loader', 'sass-loader'] },
+        { test: /\.(jpg|png)$/, loader: 'url-loader?limit=128000'},
+        { test: /\.html$/, loader: 'raw-loader' }
+      ]
+    },
+    plugins: [
+      new webpack.optimize.CommonsChunkPlugin({name: 'vendor'}),
+      new ForkCheckerPlugin(),
+      new HtmlWebpackPlugin({
+        template: path.resolve(projectRoot, './src/demo-app/index.html'),
+        chunksSortMode: 'dependency'
+      }),
+    ],
+    node: {
+      global: 'window',
+      crypto: 'empty',
+      module: false,
+      clearImmediate: false,
+      setImmediate: false
+    }
+  };
+}
+export const getWebpackMaterialE2EConfig = function(projectRoot: Function) {
+  /** Map relative paths to URLs. */
+  var aliasMap: any = {
+      '@angular2-material/core': path.resolve(projectRoot, './src/core'),
+  };
 
-    //   // // Inspect the arguments passed to an event
-    //   // // These are triggered on emits
-    //   // listeners: {
-    //   //   'webpack:compiler:run': function(compiler) {
-    //   //     // Read some data out of the compiler
-    //   //   }
-    //   // },
-    //   // Defaults to the compiler's setting
-    //   debug: true
-    // }),
-    new webpack.optimize.CommonsChunkPlugin({name: 'vendor'}),
-    new ForkCheckerPlugin(),
-    new HtmlWebpackPlugin({
-      template: ngAppResolve('./src/e2e-app/index.html'),
-      chunksSortMode: 'dependency'
-    }),
-  ],
-  node: {
-    global: 'window',
-    crypto: 'empty',
-    module: false,
-    clearImmediate: false,
-    setImmediate: false
-  }
-};
+  components.forEach(function (name) {
+    aliasMap[("@angular2-material/" + name)] = path.resolve(projectRoot, "./src/components/" + name);
+    return aliasMap[("@angular2-material/" + name)] = path.resolve(projectRoot, "./src/components/" + name);
+  });
 
+  return {
+    devtool: 'inline-source-map',
+    resolve: {
+      extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js', '.css', '.scss'],
+      root: path.resolve(projectRoot, './'),
+      alias: aliasMap
+    },
+    sassLoader: {
+      includePaths: [
+          // This allows for automatic resolving of @import's for sass for variables.
+          path.resolve(projectRoot, './src/core/style')
+      ]
+    },
+    debug: true,
+    context: path.resolve(__dirname, './'),
+    entry: {
+      main: [path.resolve(projectRoot, './src/e2e/main.ts')],
+      vendor: path.resolve(projectRoot, './src/e2e/vendor.ts')
+    },
+    output: {
+      path: './dist',
+      filename: '[name].bundle.js'
+    },
+    module: {
+      preLoaders: [
+        {
+          test: /\.js$/,
+          loader: 'source-map-loader',
+          exclude: [
+            path.resolve(projectRoot, 'node_modules/rxjs'),
+            path.resolve(projectRoot, 'node_modules/@angular'),
+          ]
+        }
+      ],
+      ts: {
+        configFileName: path.resolve(projectRoot, './src/e2e/tsconfig.json')
+      },
+      loaders: [
+        {
+          test: /\.ts$/,
+          loaders: [
+            'ts-loader', 'angular2-template-loader'
+          ],
+          exclude: [/\.(spec|e2e)\.ts$/]
+        },
+        { test: /\.json$/, loader: 'json-loader'},
+        { test: /\.css$/,  loaders: ['raw-loader', 'postcss-loader'] },
+        { test: /\.styl$/, loaders: ['raw-loader', 'postcss-loader', 'stylus-loader'] },
+        { test: /\.less$/, loaders: ['raw-loader', 'less-loader'] },
+        { test: /\.s?css$/, loaders: ['raw-loader', 'postcss-loader', 'sass-loader'] },
+        { test: /\.(jpg|png)$/, loader: 'url-loader?limit=128000'},
+        { test: /\.html$/, loader: 'raw-loader' }
+      ]
+    },
+    plugins: [
+      new webpack.optimize.CommonsChunkPlugin({name: 'vendor'}),
+      new ForkCheckerPlugin(),
+      new HtmlWebpackPlugin({
+        template: path.resolve(projectRoot, './src/e2e/index.html'),
+        chunksSortMode: 'dependency'
+      }),
+    ],
+    node: {
+      global: 'window',
+      crypto: 'empty',
+      module: false,
+      clearImmediate: false,
+      setImmediate: false
+    }
+  };
+}

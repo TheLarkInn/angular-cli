@@ -4,8 +4,8 @@ const win = require('ember-cli/lib/utilities/windows-admin');
 // const Build = require('../tasks/build');
 // const BuildWatch = require('../tasks/build-watch');
 
-const WebpackBuild = require('../tasks/build-webpack');
-const WebpackBuildWatch = require('../tasks/build-webpack-watch');
+var WebpackBuild = require('../tasks/build-webpack');
+var WebpackBuildWatch = require('../tasks/build-webpack-watch');
 
 interface BuildOptions {
   environment?: string;
@@ -31,18 +31,19 @@ module.exports = Command.extend({
     { name: 'm2', type: Boolean, default: false}
   ],
 
-  run: function(commandOptions: BuildOptions) {
-    debugger;
-    let buildTask = commandOptions.watch ?
+  run: function (commandOptions: BuildOptions) {
+    var project = this.project;
+    var ui = this.ui;
+    var buildTask = commandOptions.watch ?
       new WebpackBuildWatch({
-        project: this.project,
-        ui: this.ui,
+        cliProject: project,
+        ui: ui,
         outputPath: commandOptions.outputPath,
         environment: commandOptions.environment
       }) :
       new WebpackBuild({
-        project: this.project,
-        ui: this.ui,
+        cliProject: project,
+        ui: ui,
         outputPath: commandOptions.outputPath,
         environment: commandOptions.environment
       });
