@@ -32,10 +32,20 @@ module.exports = Command.extend({
   ],
 
   run: function(commandOptions: BuildOptions) {
-
+    debugger;
     let buildTask = commandOptions.watch ?
-      new WebpackBuildWatch() :
-      new WebpackBuild();
+      new WebpackBuildWatch({
+        project: this.project,
+        ui: this.ui,
+        outputPath: commandOptions.outputPath,
+        environment: commandOptions.environment
+      }) :
+      new WebpackBuild({
+        project: this.project,
+        ui: this.ui,
+        outputPath: commandOptions.outputPath,
+        environment: commandOptions.environment
+      });
 
     console.log(buildTask);
 

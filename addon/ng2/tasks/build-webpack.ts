@@ -13,7 +13,7 @@ module.exports = Task.extend({
   run: (runTaskOptions: ServeTaskOptions) => {
 
     // TODO#: Variable Config for environments.
-    const webpackCompiler = webpack(webpackProdConfig);
+    const webpackCompiler = webpack(webpackProdConfig(this.project));
     const ProgressPlugin  = require('webpack/lib/ProgressPlugin');
 
     webpackCompiler.apply(new ProgressPlugin({
