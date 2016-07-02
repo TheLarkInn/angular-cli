@@ -1,12 +1,5 @@
-import {
-  webpackDevServerOutputOptions,
-  webpackOutputOptions,
-  webpackCommonConfig,
-  webpackDevMaterialConfig,
-  webpackProdMaterialConfig,
-  webpackDevMaterialE2EConfig,
-  webpackDevConfig,
-} from '../models/';
+import {webpackDevServerOutputOptions} from '../models/';
+import {NgCliWebpackConfig} from '../models/webpack-config';
 import {ServeTaskOptions} from '../commands/serve';
 
 const path = require('path');
@@ -23,24 +16,27 @@ const ProgressPlugin    = require('webpack/lib/ProgressPlugin');
 let lastHash = null;
 
 module.exports = Task.extend({
-  run: (commandOptions: ServeTaskOptions) => {
-
-
+  run: function(commandOptions: ServeTaskOptions) {
 
     let webpackCompiler: any;
-    if (commandOptions.environment === 'material') {
-      webpackDevMaterialConfig.entry.main.unshift(`webpack-dev-server/client?http://localhost:${commandOptions.port}/`);
-      webpackCompiler = webpack(webpackDevMaterialConfig);
+    // if (commandOptions.environment === 'material') {
+    //   webpackDevMaterialConfig.entry.main.unshift(`webpack-dev-server/client?http://localhost:${commandOptions.port}/`);
+    //   webpackCompiler = webpack(webpackDevMaterialConfig);
 
-    } else if (commandOptions.environment === 'e2e') {
-      webpackDevMaterialE2EConfig.entry.main.unshift(`webpack-dev-server/client?http://localhost:${commandOptions.port}/`);
-      webpackCompiler = webpack(webpackDevMaterialE2EConfig);
+    // } else if (commandOptions.environment === 'e2e') {
+    //   webpackDevMaterialE2EConfig.entry.main.unshift(`webpack-dev-server/client?http://localhost:${commandOptions.port}/`);
+    //   webpackCompiler = webpack(webpackDevMaterialE2EConfig);
 
-    } else {
-      webpackDevConfig.entry.main.unshift(`webpack-dev-server/client?http://localhost:${commandOptions.port}/`);
-      webpackCompiler = webpack(webpackDevConfig);
+    // } else {
+    //   webpackDevConfig.entry.main.unshift(`webpack-dev-server/client?http://localhost:${commandOptions.port}/`);
+    //   webpackCompiler = webpack(webpackDevConfig);
+    // }
 
-    }
+    // since the .config method on the returned instance is just an object we can modify any part of it for our needs
+    var config = new NgCliWebpackConfig(this.project, commandOptions.environment).config;
+    config.entry.main.unshift(`webpack-dev-server/client?http://localhost:${commandOptions.port}/`);
+    webpackCompiler = webpack(config);
+
 
     webpackCompiler.apply(new ProgressPlugin({
       profile: true,

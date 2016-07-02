@@ -15,22 +15,22 @@ require('zone.js/dist/sync-test');
 // RxJS
 require('rxjs/Rx');
 
-var testing = require('@angular/core/testing');
-var browser = require('@angular/platform-browser-dynamic/testing');
+let testing: any = require('@angular/core/testing');
+let browser: any = require('@angular/platform-browser-dynamic/testing');
 
 testing.setBaseTestProviders(
   browser.TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
   browser.TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS
 );
 
-var testContext = require.context('../src', true, /\.spec\.ts/);
+let testContext: any = require.context('../src', true, /\.spec\.ts/);
 
 /*
  * get all the files, for each file, call the context function
  * that will require the file and load it up here. Context will
  * loop and require those spec files here
  */
-function requireAll(requireContext) {
+function requireAll(requireContext: any) {
   return requireContext.keys().map(requireContext);
 }
 
