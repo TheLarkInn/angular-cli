@@ -70,6 +70,7 @@
     "less-loader": "^2.2.3",
     "lodash": "^4.11.1",
     "node-sass": "^3.7.0",
+    "offline-plugin": "^3.4.1",
     "opn": "4.0.1",
     "parse5": "^2.1.5",
     "phantomjs-polyfill": "0.0.2",

@@ -1,9 +1,12 @@
+import { CliConfig } from './config';
 import {
   getWebpackCommonConfig,
   getWebpackDevConfigPartial,
   getWebpackProdConfigPartial,
   getWebpackMaterialConfig,
-  getWebpackMaterialE2EConfig
+  getWebpackMaterialE2EConfig,
+  getWebpackMobileConfigPartial,
+  getWebpackMobileProdConfigPartial
 } from './';
 
 const webpackMerge = require('webpack-merge');
@@ -18,6 +21,8 @@ export class NgCliWebpackConfig {
   private webpackBaseConfig: any;
   private webpackMaterialConfig: any;
   private webpackMaterialE2EConfig: any;
+  private webpackMobileConfigPartial: any;
+  private webpackMobileProdConfigPartial: any;
 
   constructor(public ngCliProject: any, public environment: string) {
     this.webpackBaseConfig = getWebpackCommonConfig(this.ngCliProject.root);
@@ -25,6 +30,14 @@ export class NgCliWebpackConfig {
     this.webpackMaterialE2EConfig = getWebpackMaterialE2EConfig(this.ngCliProject.root);
     this.webpackDevConfigPartial = getWebpackDevConfigPartial(this.ngCliProject.root);
     this.webpackProdConfigPartial = getWebpackProdConfigPartial(this.ngCliProject.root);
+    this.webpackMobileConfigPartial = getWebpackMobileConfigPartial(this.ngCliProject.root);
+    this.webpackMobileProdConfigPartial = getWebpackMobileProdConfigPartial(this.ngCliProject.root);
+
+    if (CliConfig.fromProject().apps[0].mobile){
+      this.webpackDevConfigPartial = webpackMerge(this.webpackDevConfigPartial, this.webpackMobileConfigPartial);
+      this.webpackProdConfigPartial = webpackMerge(this.webpackProdConfigPartial, this.webpackMobileProdConfigPartial);
+    }
+
     this.generateConfig();
   }
 

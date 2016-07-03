@@ -4,5 +4,8 @@
 // https://www.typescriptlang.org/docs/handbook/writing-declaration-files.html
 
 /// <reference path="<%= refToTypings %>/typings/browser.d.ts" />
-<% if(!isMobile) { %>declare var module: { id: string };<% } %>
+<% if(!isMobile) { %>
+declare var module: { id: string };
 declare var require: any;
+<% } %>
+
