@@ -25,9 +25,13 @@ export class NgCliWebpackConfig {
   private webpackMobileProdConfigPartial: any;
 
   constructor(public ngCliProject: any, public environment: string) {
-    this.webpackBaseConfig = getWebpackCommonConfig(this.ngCliProject.root);
-    this.webpackMaterialConfig = getWebpackMaterialConfig(this.ngCliProject.root);
-    this.webpackMaterialE2EConfig = getWebpackMaterialE2EConfig(this.ngCliProject.root);
+    if (ngCliProject.pkg.name === 'material2') {
+      this.webpackMaterialConfig = getWebpackMaterialConfig(this.ngCliProject.root);
+      this.webpackMaterialE2EConfig = getWebpackMaterialE2EConfig(this.ngCliProject.root);
+    } else {
+      this.webpackBaseConfig = getWebpackCommonConfig(this.ngCliProject.root);
+    }
+
     this.webpackDevConfigPartial = getWebpackDevConfigPartial(this.ngCliProject.root);
     this.webpackProdConfigPartial = getWebpackProdConfigPartial(this.ngCliProject.root);
 

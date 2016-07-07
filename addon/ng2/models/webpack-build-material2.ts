@@ -6,8 +6,8 @@
 // Do a find and replace on the src directory
 // .css'] => .scss']
 // This allows for angular2-template-loader to transpile the sass correctly.
-
 import * as webpack from 'webpack';
+import {PathsPlugin, LoaderConfig} from '../utilities/ts-path-mappings-webpack-plugin';
 
 const path = require('path');
 const ForkCheckerPlugin = require('awesome-typescript-loader').ForkCheckerPlugin;
@@ -15,41 +15,49 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 
-var components = [
-    'button',
-    'card',
-    'checkbox',
-    'grid-list',
-    'icon',
-    'input',
-    'list',
-    'progress-bar',
-    'progress-circle',
-    'radio',
-    'sidenav',
-    'slide-toggle',
-    'button-toggle',
-    'tabs',
-    'toolbar'
-];
+// var components = [
+//     'button',
+//     'card',
+//     'checkbox',
+//     'grid-list',
+//     'icon',
+//     'input',
+//     'list',
+//     'progress-bar',
+//     'progress-circle',
+//     'radio',
+//     'sidenav',
+//     'slide-toggle',
+//     'button-toggle',
+//     'tabs',
+//     'toolbar'
+// ];
 
 export const getWebpackMaterialConfig = function(projectRoot: string) {
+  const awesomeTypescriptLoaderConfig: LoaderConfig | any = {
+    useWebpackText: true,
+    useForkChecker: true,
+    tsconfig: path.resolve(projectRoot, './src/demo-app/tsconfig.json')
+  }
   /** Map relative paths to URLs. */
-  var aliasMap: any = {
-      '@angular2-material/core': path.resolve(projectRoot, './src/core'),
-  };
+  // var aliasMap: any = {
+  //     '@angular2-material/core': path.resolve(projectRoot, './src/core'),
+  // };
 
-  components.forEach(function (name) {
-    aliasMap[("@angular2-material/" + name)] = path.resolve(projectRoot, "./src/components/" + name);
-    return aliasMap[("@angular2-material/" + name)] = path.resolve(projectRoot, "./src/components/" + name);
-  });
+  // components.forEach(function (name) {
+  //   aliasMap[("@angular2-material/" + name)] = path.resolve(projectRoot, "./src/components/" + name);
+  //   return aliasMap[("@angular2-material/" + name)] = path.resolve(projectRoot, "./src/components/" + name);
+  // });
 
   return {
     devtool: 'inline-source-map',
     resolve: {
       extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js', '.css', '.scss'],
-      root: path.resolve(projectRoot, './'),
-      alias: aliasMap
+
+      plugins: [
+        new PathsPlugin(awesomeTypescriptLoaderConfig)
+      ]
+      // alias: aliasMap
     },
     sassLoader: {
       includePaths: [
@@ -57,7 +65,6 @@ export const getWebpackMaterialConfig = function(projectRoot: string) {
           path.resolve(projectRoot, './src/core/style')
       ]
     },
-    debug: true,
     context: path.resolve(__dirname, './'),
     entry: {
       main: [path.resolve(projectRoot, './src/demo-app/main.ts')],
@@ -78,14 +85,20 @@ export const getWebpackMaterialConfig = function(projectRoot: string) {
           ]
         }
       ],
-      ts: {
-        configFileName: path.resolve(projectRoot, './src/demo-app/tsconfig.json')
-      },
+      // ts: {
+      //   configFileName: path.resolve(projectRoot, './src/demo-app/tsconfig.json')
+      // },
       loaders: [
         {
           test: /\.ts$/,
           loaders: [
-            'ts-loader', 'angular2-template-loader'
+            {
+              loader: 'awesome-typescript-loader',
+              query: awesomeTypescriptLoaderConfig
+            },
+            {
+              loader: 'angular2-template-loader'
+            }
           ],
           exclude: [/\.(spec|e2e)\.ts$/]
         },
@@ -115,23 +128,32 @@ export const getWebpackMaterialConfig = function(projectRoot: string) {
     }
   };
 }
-export const getWebpackMaterialE2EConfig = function(projectRoot: Function) {
-  /** Map relative paths to URLs. */
-  var aliasMap: any = {
-      '@angular2-material/core': path.resolve(projectRoot, './src/core'),
-  };
 
-  components.forEach(function (name) {
-    aliasMap[("@angular2-material/" + name)] = path.resolve(projectRoot, "./src/components/" + name);
-    return aliasMap[("@angular2-material/" + name)] = path.resolve(projectRoot, "./src/components/" + name);
-  });
+export const getWebpackMaterialE2EConfig = function(projectRoot: string) {
+  const awesomeTypescriptLoaderConfig: LoaderConfig | any = {
+    useWebpackText: true,
+    useForkChecker: true,
+    tsconfig: path.resolve(projectRoot, './src/e2e-app/tsconfig.json')
+  }
+  /** Map relative paths to URLs. */
+  // var aliasMap: any = {
+  //     '@angular2-material/core': path.resolve(projectRoot, './src/core'),
+  // };
+
+  // components.forEach(function (name) {
+  //   aliasMap[("@angular2-material/" + name)] = path.resolve(projectRoot, "./src/components/" + name);
+  //   return aliasMap[("@angular2-material/" + name)] = path.resolve(projectRoot, "./src/components/" + name);
+  // });
 
   return {
     devtool: 'inline-source-map',
     resolve: {
       extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js', '.css', '.scss'],
-      root: path.resolve(projectRoot, './'),
-      alias: aliasMap
+
+      plugins: [
+        new PathsPlugin(awesomeTypescriptLoaderConfig)
+      ]
+      // alias: aliasMap
     },
     sassLoader: {
       includePaths: [
@@ -142,8 +164,8 @@ export const getWebpackMaterialE2EConfig = function(projectRoot: Function) {
     debug: true,
     context: path.resolve(__dirname, './'),
     entry: {
-      main: [path.resolve(projectRoot, './src/e2e/main.ts')],
-      vendor: path.resolve(projectRoot, './src/e2e/vendor.ts')
+      main: [path.resolve(projectRoot, './src/e2e-app/main.ts')],
+      vendor: path.resolve(projectRoot, './src/e2e-app/vendor.ts')
     },
     output: {
       path: './dist',
@@ -160,14 +182,20 @@ export const getWebpackMaterialE2EConfig = function(projectRoot: Function) {
           ]
         }
       ],
-      ts: {
-        configFileName: path.resolve(projectRoot, './src/e2e/tsconfig.json')
-      },
+      // ts: {
+      //   configFileName: path.resolve(projectRoot, './src/e2e-app/tsconfig.json')
+      // },
       loaders: [
         {
           test: /\.ts$/,
           loaders: [
-            'ts-loader', 'angular2-template-loader'
+            {
+              loader: 'awesome-typescript-loader',
+              query: awesomeTypescriptLoaderConfig
+            },
+            {
+              loader: 'angular2-template-loader'
+            }
           ],
           exclude: [/\.(spec|e2e)\.ts$/]
         },
@@ -184,7 +212,7 @@ export const getWebpackMaterialE2EConfig = function(projectRoot: Function) {
       new webpack.optimize.CommonsChunkPlugin({name: 'vendor'}),
       new ForkCheckerPlugin(),
       new HtmlWebpackPlugin({
-        template: path.resolve(projectRoot, './src/e2e/index.html'),
+        template: path.resolve(projectRoot, './src/e2e-app/index.html'),
         chunksSortMode: 'dependency'
       }),
     ],

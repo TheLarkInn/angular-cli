@@ -17,6 +17,7 @@ export const getWebpackCommonConfig = function(projectRoot: string) {
     devtool: 'inline-source-map',
     resolve: {
       extensions: ['', '.ts', '.js'],
+      root: path.resolve(projectRoot, './src'),
       plugins: [
         new PathsPlugin(awesomeTypescriptLoaderConfig)
       ]
