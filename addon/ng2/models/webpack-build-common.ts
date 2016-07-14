@@ -3,7 +3,6 @@ import {LoaderConfig} from '../utilities/ts-path-mappings-webpack-plugin';
 
 const path = require('path');
 const ForkCheckerPlugin = require('awesome-typescript-loader').ForkCheckerPlugin;
-const PathsPlugin = require('awesome-typescript-loader').TsConfigPathsPlugin;
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -20,7 +19,6 @@ export const getWebpackCommonConfig = function(projectRoot: string) {
       extensions: ['', '.ts', '.js'],
       root: path.resolve(projectRoot, './src'),
       plugins: [
-        new PathsPlugin(awesomeTypescriptLoaderConfig)
       ]
     },
     context: path.resolve(__dirname, './'),
