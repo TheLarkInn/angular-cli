@@ -18,8 +18,7 @@ export const getWebpackCommonConfig = function(projectRoot: string) {
     resolve: {
       extensions: ['', '.ts', '.js'],
       root: path.resolve(projectRoot, './src'),
-      plugins: [
-      ]
+      moduleDirectories: ['node_modules']
     },
     context: path.resolve(__dirname, './'),
     entry: {

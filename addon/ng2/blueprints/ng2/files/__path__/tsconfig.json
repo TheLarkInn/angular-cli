@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl":"./src",
     "declaration": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -9,15 +9,15 @@
     "moduleResolution": "node",
     "outDir": "./dist/",
     "rootDir": ".",
-    "mapRoot": "/",
-    "sourceMap": true,
-    "sourceRoot": "."
+    "sourceMap": true
   },
+  "compileOnSave": false,
+  "buildOnSave": false,
   "exclude": [
     "node_modules",
     "bower_components"
   ],
-  "files": [
-    "typings.d.ts"
+  "includes": [
+    "**.d.ts"
   ]
 }
