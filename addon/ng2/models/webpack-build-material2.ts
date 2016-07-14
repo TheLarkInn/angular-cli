@@ -7,7 +7,7 @@
 // .css'] => .scss']
 // This allows for angular2-template-loader to transpile the sass correctly.
 import * as webpack from 'webpack';
-import {PathsPlugin, LoaderConfig} from '../utilities/ts-path-mappings-webpack-plugin';
+import {LoaderConfig} from '../utilities/ts-path-mappings-webpack-plugin';
 
 const path = require('path');
 const ForkCheckerPlugin = require('awesome-typescript-loader').ForkCheckerPlugin;
@@ -53,9 +53,7 @@ export const getWebpackMaterialConfig = function(projectRoot: string) {
     devtool: 'inline-source-map',
     resolve: {
       extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js', '.css', '.scss'],
-
       plugins: [
-        new PathsPlugin(awesomeTypescriptLoaderConfig)
       ]
       // alias: aliasMap
     },
@@ -151,7 +149,6 @@ export const getWebpackMaterialE2EConfig = function(projectRoot: string) {
       extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js', '.css', '.scss'],
 
       plugins: [
-        new PathsPlugin(awesomeTypescriptLoaderConfig)
       ]
       // alias: aliasMap
     },
