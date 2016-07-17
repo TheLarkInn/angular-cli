@@ -82,11 +82,12 @@ describe('Basic end-to-end Workflow', function () {
     expect(sh.exec('git status --porcelain').output).to.be.equal(undefined);
   });
 
-  xit('Supports production builds config file replacement', function() {
-    var mainBundlePath = path.join(process.cwd(), 'dist', 'main.js');
+  it('Supports production builds config file replacement', function() {
+    sh.exec(`${ngBin} build --dev`);
+    var mainBundlePath = path.join(process.cwd(), 'dist', 'main.bundle.js');
     var mainBundleContent = fs.readFileSync(mainBundlePath, { encoding: 'utf8' });
-    // production: true minimized turns into production:!0
-    expect(mainBundleContent).to.include('production:!0');
+    // production: true minimized turns into production:!1
+    expect(mainBundleContent).to.include('production: false');
   });
 
   it_mobile('Enables mobile-specific production features in prod builds', () => {
@@ -458,7 +459,6 @@ describe('Basic end-to-end Workflow', function () {
     config.compilerOptions.paths = { '@angular/*': [] };
     fs.writeFileSync(configFilePath, JSON.stringify(config, null, 2), 'utf8');
 
-<<<<<<< HEAD
     sh.exec(`${ngBin} build`);
     // #TODO: Uncomment these lines when https://github.com/Microsoft/TypeScript/issues/9772 is fixed.
     // .catch(() => {
@@ -478,27 +478,6 @@ describe('Basic end-to-end Workflow', function () {
     expect(existsSync(path.join(process.cwd(), 'dist'))).to.be.equal(true);
     const indexHtml = fs.readFileSync(path.join(process.cwd(), 'dist/index.html'), 'utf-8');
     expect(indexHtml).to.include('main.bundle.js');
-=======
-    return exec(`${ngBin} build`)
-      // #TODO: Uncomment these lines when https://github.com/Microsoft/TypeScript/issues/9772 is fixed.
-      // .catch(() => {
-      //   return true;
-      // })
-      // .then((passed) => {
-      //   expect(passed).to.equal(true);
-      // })
-      .then(() => {
-        // This should succeed.
-        config.compilerOptions.paths = {
-          '@angular/*': [ '../node_modules/@angular/*' ]
-        };
-        fs.writeFileSync(configFilePath, JSON.stringify(config, null, 2), 'utf8');
-      })
-      .then(() => exec(`${ngBin} build`)
-      .catch(() => {
-        expect('build failed where it should have succeeded').to.equal('');
-      });
->>>>>>> e3e637b... fix: fix the way the build command runs for mobile tests
   });
 
   it('Serve and run e2e tests after all other commands', function () {
