@@ -8,11 +8,15 @@ import { CliConfig } from './config';
 
 export function getWebpackCommonConfig(projectRoot: string, sourceDir: string) {
   const styles = CliConfig.fromProject().apps
-    .map(app => Object.keys(app.styles))
-    .map((style) => {return path.resolve(projectRoot, style.pop())})
+    .map(app => app.styles)
 
-  const flattenedStyles = [].concat.apply([], styles);
-  const extractCSS = new ExtractTextPlugin('style.css');
+
+  const flattenedStyles = [].concat.apply([], styles)
+    .map((style) => {style.path = path.resolve(projectRoot, style.path); return style});
+
+  const flattenedStylesPaths = flattenedStyles.map(style => style.path);
+
+  const extractCSS = new ExtractTextPlugin({filename: 'style.css', allChunks: 'true'});
 
 
   return {
@@ -23,7 +27,7 @@ export function getWebpackCommonConfig(projectRoot: string, sourceDir: string) {
     },
     context: path.resolve(__dirname, './'),
     entry: {
-      main: [path.resolve(projectRoot, `./${sourceDir}/main.ts`)].concat(flattenedStyles),
+      main: [path.resolve(projectRoot, `./${sourceDir}/main.ts`)].concat(flattenedStylesPaths),
       polyfills: path.resolve(projectRoot, `./${sourceDir}/polyfills.ts`)
     },
     output: {
@@ -59,19 +63,24 @@ export function getWebpackCommonConfig(projectRoot: string, sourceDir: string) {
           exclude: [/\.(spec|e2e)\.ts$/]
         },
 
-        { include: flattenedStyles, test: /\.css$/,  loader:  extractCSS.extract(['css-loader', 'postcss-loader'])},
-        { include: flattenedStyles, test: /\.styl$/, loader:  extractCSS.extract(['css-loader', 'postcss-loader', 'stylus-loader'])},
-        { include: flattenedStyles, test: /\.less$/, loader:  extractCSS.extract(['css-loader', 'postcss-loader', 'less-loader'])},
-        { include: flattenedStyles, test: /\.scss$|\.sass$/, loader:  extractCSS.extract(['css-loader', 'postcss-loader', 'sass-loader'])},
+        { include: flattenedStylesPaths, test: /\.css$/,  loader:  extractCSS.extract(['css-loader', 'postcss-loader'])},
+        { include: flattenedStylesPaths, test: /\.styl$/, loader:  extractCSS.extract(['css-loader', 'postcss-loader', 'stylus-loader'])},
+        { include: flattenedStylesPaths, test: /\.less$/, loader:  extractCSS.extract(['css-loader', 'postcss-loader', 'less-loader'])},
+        { include: flattenedStylesPaths, test: /\.scss$|\.sass$/, loader:  extractCSS.extract(['css-loader', 'postcss-loader', 'sass-loader'])},
 
-        { exclude: flattenedStyles, test: /\.css$/,  loaders: ['raw-loader', 'postcss-loader'] },
-        { exclude: flattenedStyles, test: /\.styl$/, loaders: ['raw-loader', 'postcss-loader', 'stylus-loader'] },
-        { exclude: flattenedStyles, test: /\.less$/, loaders: ['raw-loader', 'postcss-loader', 'less-loader'] },
-        { exclude: flattenedStyles, test: /\.scss$|\.sass$/, loaders: ['raw-loader', 'postcss-loader', 'sass-loader'] },
+        { exclude: flattenedStylesPaths, test: /\.css$/,  loaders: ['raw-loader', 'postcss-loader'] },
+        { exclude: flattenedStylesPaths, test: /\.styl$/, loaders: ['raw-loader', 'postcss-loader', 'stylus-loader'] },
+        { exclude: flattenedStylesPaths, test: /\.less$/, loaders: ['raw-loader', 'postcss-loader', 'less-loader'] },
+        { exclude: flattenedStylesPaths, test: /\.scss$|\.sass$/, loaders: ['raw-loader', 'postcss-loader', 'sass-loader'] },
 
         { test: /\.json$/, loader: 'json-loader'},
         { test: /\.(jpg|png)$/, loader: 'url-loader?limit=128000'},
-        { test: /\.html$/, loader: 'raw-loader' }
+        { test: /\.html$/, loader: 'raw-loader' },
+
+        {test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff'},
+        {test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/octet-stream'},
+        {test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file'},
+        {test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=image/svg+xml'}
       ]
     },
     plugins: [

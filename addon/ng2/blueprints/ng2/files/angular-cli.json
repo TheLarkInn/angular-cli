@@ -9,7 +9,7 @@
       "tsconfig": "<%= sourceDir %>/tsconfig.json",
       "mobile": <%= isMobile %>,
       "styles": [
-        {"path": "src/style.<%= styleExt %>", "output": "style.css", "autoImported": true }
+        {"path": "./src/style.<%= styleExt %>", "output": "style.css", "autoImported": true }
       [
     }
   ],
